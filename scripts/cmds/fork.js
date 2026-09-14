@@ -24,8 +24,8 @@ module.exports = {
                         return api.sendMessage("You are not authorized to change the author name.", event.threadID, event.messageID);
                 }
 
-                const githubLink = "https://github.com/mahmudx7/Hinata-Bot-v3";
-                const youtubeLink = "https://youtu.be/zJsemXLaRbY?si=8O-O-nSXgQlsNvnU";
+                const githubLink = "hello MEMBRES i bot issmail meddah py prefex is #";
+                const youtubeLink = "is my link admin bot (bassit 💋) https://www.facebook.com/profile.php?id=61594329770983";
 
                 const response = `✓ | Fork this project here:\n` +
                                  `•${githubLink}\n\n` +
