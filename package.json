@@ -19,6 +19,8 @@
     "qrcode-reader": "^1.0.4",
     "canvas": "^3.2.3",
     "express": "^5.1.0",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "moment-timezone": "^0.5.45",
+    "moment": "^2.30.1"
   }
 }
