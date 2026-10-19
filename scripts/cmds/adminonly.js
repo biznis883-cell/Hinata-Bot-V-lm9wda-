@@ -1,3 +1,4 @@
+
 const fs = require("fs-extra");
 const { config } = global.GoatBot;
 const { client } = global;
@@ -6,64 +7,83 @@ module.exports = {
 	config: {
 		name: "adminonly",
 		aliases: ["adonly", "onlyad", "onlyadmin"],
-		version: "1.5",
-		author: "NTKhang",
+		version: "2.0.0",
+		author: "Bassit",
 		countDown: 5,
 		role: 2,
 		description: {
-			vi: "bật/tắt chế độ chỉ admin mới có thể sử dụng bot",
-			en: "turn on/off only admin can use bot"
+			en: "Turn admin-only mode on or off"
 		},
 		category: "owner",
 		guide: {
-			vi: "   {pn} [on | off]: bật/tắt chế độ chỉ admin mới có thể sử dụng bot"
-				+ "\n   {pn} noti [on | off]: bật/tắt thông báo khi người dùng không phải là admin sử dụng bot",
-			en: "   {pn} [on | off]: turn on/off the mode only admin can use bot"
-				+ "\n   {pn} noti [on | off]: turn on/off the notification when user is not admin use bot"
+			en: "{pn} on | off"
+				+ "\n{pn} noti on | off"
 		}
 	},
 
-	langs: {
-		vi: {
-			turnedOn: "Đã bật chế độ chỉ admin mới có thể sử dụng bot",
-			turnedOff: "Đã tắt chế độ chỉ admin mới có thể sử dụng bot",
-			turnedOnNoti: "Đã bật thông báo khi người dùng không phải là admin sử dụng bot",
-			turnedOffNoti: "Đã tắt thông báo khi người dùng không phải là admin sử dụng bot"
-		},
-		en: {
-			turnedOn: "Turned on the mode only admin can use bot",
-			turnedOff: "Turned off the mode only admin can use bot",
-			turnedOnNoti: "Turned on the notification when user is not admin use bot",
-			turnedOffNoti: "Turned off the notification when user is not admin use bot"
-		}
-	},
+	onStart: function ({ args, message }) {
+		const action = (args[0] || "").toLowerCase();
 
-	onStart: function ({ args, message, getLang }) {
-		let isSetNoti = false;
-		let value;
-		let indexGetVal = 0;
-
-		if (args[0] == "noti") {
-			isSetNoti = true;
-			indexGetVal = 1;
+		if (!config.adminOnly) {
+			config.adminOnly = { enable: false };
 		}
 
-		if (args[indexGetVal] == "on")
-			value = true;
-		else if (args[indexGetVal] == "off")
-			value = false;
-		else
-			return message.SyntaxError();
-
-		if (isSetNoti) {
-			config.hideNotiMessage.adminOnly = !value;
-			message.reply(getLang(value ? "turnedOnNoti" : "turnedOffNoti"));
-		}
-		else {
-			config.adminOnly.enable = value;
-			message.reply(getLang(value ? "turnedOn" : "turnedOff"));
+		if (!config.hideNotiMessage) {
+			config.hideNotiMessage = {};
 		}
 
-		fs.writeFileSync(client.dirConfig, JSON.stringify(config, null, 2));
+		if (action === "on") {
+			config.adminOnly.enable = true;
+
+			// إخفاء إشعار رفض الأوامر
+			config.hideNotiMessage.adminOnly = true;
+
+			fs.writeFileSync(
+				client.dirConfig,
+				JSON.stringify(config, null, 2)
+			);
+
+			return message.reply("😗");
+		}
+
+		if (action === "off") {
+			config.adminOnly.enable = false;
+
+			// إبقاء إشعار الرفض مخفياً
+			config.hideNotiMessage.adminOnly = true;
+
+			fs.writeFileSync(
+				client.dirConfig,
+				JSON.stringify(config, null, 2)
+			);
+
+			return message.reply("🐤");
+		}
+
+		if (action === "noti") {
+			const value = (args[1] || "").toLowerCase();
+
+			if (value !== "on" && value !== "off") {
+				return message.reply(
+					"استعمل: adminonly noti on أو adminonly noti off"
+				);
+			}
+
+			// noti off = إخفاء الإشعار
+			config.hideNotiMessage.adminOnly = value === "off";
+
+			fs.writeFileSync(
+				client.dirConfig,
+				JSON.stringify(config, null, 2)
+			);
+
+			return message.reply(
+				value === "on" ? "🔔" : "🔕"
+			);
+		}
+
+		return message.reply(
+			"استعمل:\nadminonly on 😗\nadminonly off 🐤"
+		);
 	}
 };
